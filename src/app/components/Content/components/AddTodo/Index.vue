@@ -1,7 +1,14 @@
+<!--
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-22 09:59:50
+ * @FilePath: \sticky-notes\src\app\components\Content\components\AddTodo\Index.vue
+-->
 <template>
   <div class="add-todo">
     <n-button class="add-todo-btn" v-if="!isEdit" ghost @click="addClick"
-      >新增待办</n-button
+      >新增日报</n-button
     >
     <AddTodoInfo @close="closeClick" @ok="okClick" v-else />
   </div>
@@ -32,7 +39,7 @@ const okClick = (todo: TodoModel) => {
   const data = addTodo(todo);
   // if (data.code == 1) emits("refresh");
   closeClick();
-  playAddAudio()
+  playAddAudio();
 };
 </script>
 

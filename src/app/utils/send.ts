@@ -48,12 +48,12 @@ export const changeBaseSetting = (base: BaseSetting) => {
     return ipcRenderer.sendSync(bridgeKey.changeBaseSetting, base);
 }
 
-// 增加待办
+// 增加日报
 export const addTodo = (todo: TodoModel): ResultInfo => {
     const data = ipcRenderer.sendSync(bridgeKey.addTodo, todo);
     return data;
 }
-// 删除待办
+// 删除日报
 export const remTodo = (id: number): ResultInfo => {
     const data = ipcRenderer.sendSync(bridgeKey.delTodo, id);
     return data;
@@ -66,7 +66,7 @@ export const permanentDelTodo = (id: number): ResultInfo => {
 export const clearTodo = (): ResultInfo => {
     return ipcRenderer.sendSync(bridgeKey.clearTodo);
 }
-// 编辑待办
+// 编辑日报
 export const editTodo = (todo: TodoModel): ResultInfo => {
     const data = ipcRenderer.sendSync(bridgeKey.editTodo, todo);
     return data;

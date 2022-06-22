@@ -92,15 +92,15 @@ const initTray = () => {
 // 首次运行 初始化一些东西
 const firstRunInit = () => {
   addTodo({
-    content: "点击“新增待办”增加一条新的待办",
+    content: "点击“新增日报”增加一条新的日报",
     status: StatusModel.未完成,
   });
   addTodo({
-    content: "双击“待办”修改当前待办",
+    content: "双击“日报”修改当前日报",
     status: StatusModel.未完成,
   });
   addTodo({
-    content: "右键“待办”操作当前待办",
+    content: "右键“日报”操作当前日报",
     status: StatusModel.未完成,
   });
   addTodo({

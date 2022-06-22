@@ -4,7 +4,7 @@
       ref="input"
       class="info-input"
       type="textarea"
-      placeholder="请输入待办内容"
+      placeholder="请输入日报内容"
       :autofocus="true"
       :value="value"
       size="small"
@@ -28,14 +28,18 @@
       </div>
     </div>
   </div>
-  <cycle-setting :remind="remind" v-model:show="showCycleSetting" @ok="cycleSettingOk" />
+  <cycle-setting
+    :remind="remind"
+    v-model:show="showCycleSetting"
+    @ok="cycleSettingOk"
+  />
 </template>
 
 <script setup lang="ts">
 import { RemindModel, StatusModel, TodoModel } from "@/common/interface";
 import { NButton, NInput, useMessage } from "naive-ui";
 import { InputHTMLAttributes, onMounted, ref, Ref, toRaw } from "vue";
-import _ from 'lodash'
+import _ from "lodash";
 import CycleSetting from "../CycleSetting";
 const message = useMessage();
 const input: Ref<HTMLInputElement> = ref(null);
@@ -77,22 +81,22 @@ const closeClick = () => {
 // 确认事件
 const okClick = () => {
   if (currentLength.value == 0) {
-    message.error("请输入待办内容");
+    message.error("请输入日报内容");
     return;
   }
   emits("ok", {
     content: value.value,
     status: StatusModel.未完成,
-    remind: toRaw(remind)
+    remind: toRaw(remind),
   });
 };
 
 // 循环设置
 // 显示循环设置
-const showCycleSetting = ref(false)
+const showCycleSetting = ref(false);
 const cycleSettingOk = (v: RemindModel) => {
   remind = v;
-}
+};
 </script>
 
 <style lang="less" scoped>
