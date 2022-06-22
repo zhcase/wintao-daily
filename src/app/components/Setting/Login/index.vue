@@ -2,47 +2,62 @@
  * @Author: zeHua
  * @Date: 2022-06-21 11:15:09
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-21 23:53:31
- * @FilePath: /wintao/wintao-daily/src/app/components/Setting/Login/index.vue
+ * @LastEditTime: 2022-06-22 16:08:56
+ * @FilePath: \sticky-notes\src\app\components\Setting\Login\index.vue
 -->
 <template>
-  <n-form ref="formRef" :model="model" :rules="rules">
-    <n-form-item path="age" label="用户名">
-      <n-input v-model:value="model.username" @keydown.enter.prevent />
-    </n-form-item>
-    <n-form-item path="password" label="密码">
-      <n-input
-        v-model:value="model.password"
-        type="password"
-        @input="handlePasswordInput"
-        @keydown.enter.prevent
-      />
-    </n-form-item>
+  <div class="wintao-login">
+    <n-form ref="formRef" :model="model" :rules="rules" style="padding: 20px">
+      <n-form-item path="useraccount" label="用户名">
+        <n-input v-model:value="model.useraccount" @keydown.enter.prevent />
+      </n-form-item>
+      <n-form-item path="password" label="密码">
+        <n-input
+          v-model:value="model.password"
+          type="password"
+          @input="handlePasswordInput"
+          @keydown.enter.prevent
+        />
+      </n-form-item>
+      <!-- 
     <n-form-item path="code" label="验证码">
       <n-input
         v-model:value="model.code"
         type="password"
+        style="width: 70%"
         @input="handlePasswordInput"
         @keydown.enter.prevent
       />
-    </n-form-item>
+      <img :src="imageUrl" style="height: 100%; width: 30%" />
+    </n-form-item> -->
 
-    <n-row>
-      <n-col>
-        <div>
-          <n-button
-            round
-            type="primary"
-            @click="handleValidateButtonClick"
-            style="width: 100%"
-          >
-            登 录
-          </n-button>
-        </div>
-      </n-col>
-    </n-row>
-  </n-form>
-  <!-- <n-space vertical>
+      <n-row>
+        <n-col>
+          <div>
+            <n-button
+              round
+              type="primary"
+              @click="handleValidateButtonClick"
+              style="width: 100%"
+            >
+              登 录
+            </n-button>
+          </div>
+        </n-col>
+      </n-row>
+    </n-form>
+    <n-result
+      v-if="false"
+      status="success"
+      title="登录成功"
+      description="失败的孩子"
+      style="margin-top: 50px"
+    >
+      <template #footer>
+        <n-button>我喜欢</n-button>
+      </template>
+    </n-result>
+    <!-- <n-space vertical>
     <n-input
       v-model:value="data.useraccount"
       type="text"
@@ -69,12 +84,13 @@
 
     <n-button @click="handleLogin">登录</n-button>
   </n-space> -->
+  </div>
 </template>
 
-<script lang="ts">
+<script>
 // import { defineComponent, onMounted, reactive, ref } from 'vue'
 // import { NButton, NInput, useMessage } from 'naive-ui'
-// import axios from 'axios'
+import axios from "axios";
 // export default defineComponent({
 //   components: {
 //     NButton,
@@ -165,8 +181,21 @@
 //   },
 // })
 
-import { defineComponent, ref } from 'vue'
-import { useMessage, NForm, NFormItem, NInput, NButton } from 'naive-ui'
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  defineEmits,
+  getCurrentInstance,
+} from "vue";
+import {
+  useMessage,
+  NForm,
+  NFormItem,
+  NInput,
+  NButton,
+  NResult,
+} from "naive-ui";
 
 export default defineComponent({
   components: {
@@ -174,45 +203,56 @@ export default defineComponent({
     NFormItem,
     NInput,
     NButton,
+    NResult,
   },
-  setup() {
-    const formRef = ref(null)
-    const rPasswordFormItemRef = ref(null)
-    const message = useMessage()
+  emits: {
+    handleLogin: null,
+  },
+  setup(props, context) {
+    const formRef = ref(null);
+    const imageUrl = ref(null);
+    const rPasswordFormItemRef = ref(null);
+    const message = useMessage();
+
     const modelRef = ref({
-      username: null,
+      useraccount: null,
       password: null,
-      code: null,
-    })
+      // code: null,
+    });
     function validatePasswordStartWith(rule, value) {
       return (
         !!modelRef.value.password &&
         modelRef.value.password.startsWith(value) &&
         modelRef.value.password.length >= value.length
-      )
+      );
     }
     function validatePasswordSame(rule, value) {
-      return value === modelRef.value.password
+      return value === modelRef.value.password;
     }
+    //     // 获取图片路径
+    // function getImageUrl() {
+    //   imageUrl.value =
+    //     "http://192.168.0.12:8080/WDMS/system/checkCode?a=" + new Date();
+    // }
     const rules = {
-      age: [
+      useraccount: [
         {
           required: true,
-          message: '请输入用户名',
+          message: "请输入用户名",
         },
       ],
       password: [
         {
           required: true,
-          message: '请输入密码',
+          message: "请输入密码",
         },
       ],
-      code: [
-        {
-          required: true,
-          message: '请输入验证码',
-        },
-      ],
+      // code: [
+      //   {
+      //     required: true,
+      //     message: "请输入验证码",
+      //   },
+      // ],
       // reenteredPassword: [
       //   {
       //     required: true,
@@ -230,29 +270,69 @@ export default defineComponent({
       //     trigger: ['blur', 'password-input'],
       //   },
       // ],
+    };
+
+    function handleValidateButtonClick(e) {
+      e.preventDefault();
+      formRef.value.validate((errors) => {
+        if (!errors) {
+          axios
+            .post("http://192.168.0.83:5000/login", {
+              useraccount: modelRef.value.useraccount,
+              password: modelRef.value.password,
+            })
+            .then(function (response) {
+              let data = response.data;
+              if (data.status == "ok") {
+                message.success("登录成功");
+                localStorage.setItem("sessionId", data.Cookie);
+                localStorage.setItem("user", JSON.stringify(modelRef.value));
+
+                context.emit("handleLogin");
+                window.sessionId = data.Cookie;
+              } else {
+                message.error(data.message);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else {
+          console.log(errors);
+          message.error("验证失败");
+        }
+      });
     }
+
+    onMounted(() => {
+      // getImageUrl();
+    });
+
     return {
       formRef,
       rPasswordFormItemRef,
       model: modelRef,
       rules,
+      // getImageUrl,
+      imageUrl,
+      handleValidateButtonClick,
       handlePasswordInput() {
         if (modelRef.value.reenteredPassword) {
-          rPasswordFormItemRef.value?.validate({ trigger: 'password-input' })
+          rPasswordFormItemRef.value?.validate({ trigger: "password-input" });
         }
       },
-      handleValidateButtonClick(e) {
-        e.preventDefault()
-        formRef.value?.validate(errors => {
-          if (!errors) {
-            message.success('验证成功')
-          } else {
-            console.log(errors)
-            message.error('验证失败')
-          }
-        })
-      },
-    }
+    };
   },
-})
+});
 </script>
+
+<style>
+.wintao-login {
+  height: 100%;
+  top: 40px;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  background-color: #fff;
+}
+</style>

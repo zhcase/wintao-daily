@@ -8,7 +8,9 @@
     <NMessageProvider>
       <NConfigProvider :locale="zhCN" :date-locale="dateZhCN">
         <TopNav v-model:lock="lock" />
-        <Content />
+        {{ isLogin }}
+        <Content v-if="isLogin" />
+        <Login @handleLogin="handleLogin" v-if="!isLogin" />
         <BottomNav />
       </NConfigProvider>
     </NMessageProvider>
@@ -20,13 +22,17 @@ import { NMessageProvider, NConfigProvider, zhCN, dateZhCN } from "naive-ui";
 import TopNav from "@app/components/TopNav";
 import Content from "@app/components/Content";
 import BottomNav from "@app/components/BottomNav";
-import { onMounted, Ref, ref, watch } from "vue";
+import { onMounted, Ref, ref, watch, getCurrentInstance } from "vue";
 import { leaveToZero, moveToZero } from "@/app/utils/event";
 import remote from "@/app/utils/render";
+import Login from "@/app/components/Setting/Login";
 const win = remote.getCurrentWindow();
+console.log(window);
+
 win.setIgnoreMouseEvents(false);
 // 锁定
 const lock = ref(false);
+
 watch(lock, (newV) => {
   if (newV) {
     if (intervalId) {
@@ -42,11 +48,14 @@ watch(lock, (newV) => {
 
 // 隐藏
 const leave = ref(false);
+const isLogin = ref(false);
+
 let intervalId;
+const handleLogin = () => {
+  isLogin.value = true;
+};
 const checkShowOrHidden = () => {
   const cursorPos = remote.screen.getCursorScreenPoint();
-  console.log(cursorPos);
-
   if (!leave.value) {
     if (
       cursorPos.x < posXMin ||
@@ -94,6 +103,9 @@ leaveToZero(() => {
     clearInterval(intervalId);
     intervalId = null;
   }
+});
+onMounted(() => {
+  isLogin.value = localStorage.getItem("sessionId") ? true : false;
 });
 </script>
 

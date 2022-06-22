@@ -6,9 +6,9 @@
     }"
   >
     <div class="left">
-      <div>日报</div>
+      <div style="color: #fff">日报</div>
       <n-badge :dot="count > 0" class="custom-dot">
-        <span class="icon-msg" />
+        <span class="icon-msg" style="color: #fff" />
       </n-badge>
     </div>
     <div class="right">
@@ -86,6 +86,8 @@ const showMenu = () => {
   }
 
   .custom-dot {
+    color: #fff;
+
     :deep(.n-badge-sup) {
       left: 70%;
       bottom: 60%;
@@ -96,8 +98,13 @@ const showMenu = () => {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    color: #fff;
     padding-left: 10px;
+    div {
+      color: #fff;
+    }
     & > div {
+      color: #fff;
       user-select: none;
       color: @base-color;
     }
@@ -105,9 +112,13 @@ const showMenu = () => {
   // 右侧信息
   .right {
     display: flex;
+    color: #fff;
     justify-content: flex-end;
     align-items: center;
     padding-right: 10px;
+    span {
+      color: #fff;
+    }
   }
 }
 </style>

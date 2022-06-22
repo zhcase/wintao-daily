@@ -1,3 +1,10 @@
+<!--
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-22 17:52:10
+ * @FilePath: \sticky-notes\src\app\components\BottomNav\Index.vue
+-->
 <template>
   <div class="bottom-nav">
     <div class="left">
@@ -17,14 +24,13 @@ import { NPopover, NBadge, NSpace } from "naive-ui";
 import { reactive, ref } from "vue";
 import TodoListModal from "../TodoListModal";
 
-const show = ref(false)
+const show = ref(false);
 const type = ref(-1);
 
 const showModal = (t: number) => {
   type.value = t;
   show.value = true;
-}
-
+};
 </script>
 
 <style lang="less" scoped>
@@ -57,6 +63,7 @@ const showModal = (t: number) => {
   }
 
   .custom-dot {
+    color: #fff;
     :deep(.n-badge-sup) {
       left: 70%;
       bottom: 60%;

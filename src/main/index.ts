@@ -92,7 +92,7 @@ const initTray = () => {
 // 首次运行 初始化一些东西
 const firstRunInit = () => {
   addTodo({
-    content: "点击“新增日报”增加一条新的日报",
+    content: "点击“新增日报”增加一条新的日报22",
     status: StatusModel.未完成,
   });
   addTodo({

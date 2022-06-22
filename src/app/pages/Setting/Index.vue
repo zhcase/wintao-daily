@@ -2,7 +2,7 @@
  * @Author: zeHua
  * @Date: 2022-06-21 11:15:09
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-21 13:56:19
+ * @LastEditTime: 2022-06-22 11:32:55
  * @FilePath: \sticky-notes\src\app\pages\Setting\Index.vue
 -->
 <template>
@@ -73,9 +73,12 @@ const closeClick = () => {
   background: white;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 
   .content {
     padding: 15px;
+    overflow: hidden;
+
     .zw {
       height: 40px - 15px;
     }

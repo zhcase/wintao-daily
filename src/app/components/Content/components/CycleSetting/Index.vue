@@ -2,8 +2,14 @@
   <transition name="slide-fade">
     <div class="cycle-setting" v-if="show">
       <NCard class="content">
-        <n-tabs default-value="setting" size="large" justify-content="space-evenly">
-          <n-tab-pane name="select" tab="选择"></n-tab-pane>
+        <n-tabs
+          default-value="setting"
+          size="large"
+          justify-content="space-evenly"
+        >
+          <n-tab-pane name="select" tab="选择">
+            <Type />
+          </n-tab-pane>
           <n-tab-pane name="setting" tab="设置">
             <n-form
               ref="formRef"
@@ -64,7 +70,7 @@
               </n-form-item>
               <n-form-item label="提醒时间" path="ms">
                 <n-time-picker
-                  style="width: 100%;"
+                  style="width: 100%"
                   format="HH:mm"
                   :on-update:value="selectTimer"
                   :value="model.ms"
@@ -84,6 +90,7 @@
 
 <script setup lang="ts">
 import { ref, Ref, toRaw, watch } from "vue";
+import Type from "./components/type"; //选择类型
 import {
   NButton,
   NTabs,
@@ -97,56 +104,63 @@ import {
   NDatePicker,
   FormRules,
   FormInst,
-  NCalendar
+  NCalendar,
 } from "naive-ui";
-import { RemindModel, RemindWayModel, TodoModel, WeekModel } from "@/common/interface";
-import moment from 'moment'
+import {
+  RemindModel,
+  RemindWayModel,
+  TodoModel,
+  WeekModel,
+} from "@/common/interface";
+import moment from "moment";
 
 interface Props {
   show: boolean;
-  remind: RemindModel
+  remind: RemindModel;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   show: false,
-  remind: null
-})
-
+  remind: null,
+});
 
 // 表单设置
-const formRef: Ref<FormInst> = ref(null)
+const formRef: Ref<FormInst> = ref(null);
 const formRules: FormRules = {
   way: {
     required: true,
-    message: "循环方式必填"
+    message: "循环方式必填",
   },
   ms: {
     required: true,
-    message: "提醒时间必填"
+    message: "提醒时间必填",
   },
   waySetting: {
     ms: {
       required: true,
-      message: "循环设置必填"
-    }
-  }
-}
+      message: "循环设置必填",
+    },
+  },
+};
 let model: Ref<RemindModel> = ref({
-  waySetting: {}
-})
+  waySetting: {},
+});
 
 // if (props.remind) {
 //   model.value = props.remind;
 // }
-watch(() => props.remind, (newV, oldV) => {
-  model.value = newV;
-})
+watch(
+  () => props.remind,
+  (newV, oldV) => {
+    model.value = newV;
+  }
+);
 
 const emits = defineEmits<{
   (e: "close"): void;
-  (e: "ok", todo: RemindModel): void,
-  (e: 'update:show', v: boolean): void;
-}>()
+  (e: "ok", todo: RemindModel): void;
+  (e: "update:show", v: boolean): void;
+}>();
 
 // 循环方式
 const selectWayOptions: Ref<SelectOption[]> = ref([]);
@@ -171,10 +185,12 @@ for (let key in WeekModel) {
 }
 
 // 日
-const dayOptions: Ref<SelectOption[]> = ref([{
-  label: "最后一天",
-  value: 0,
-}]);
+const dayOptions: Ref<SelectOption[]> = ref([
+  {
+    label: "最后一天",
+    value: 0,
+  },
+]);
 for (let i = 1; i < 32; i++) {
   dayOptions.value.push({
     label: i + "号",
@@ -186,8 +202,8 @@ for (let i = 1; i < 32; i++) {
 const changeSelectWay = (value: RemindWayModel) => {
   model.value.way = value;
   model.value.waySetting = {
-    ms: undefined
-  }
+    ms: undefined,
+  };
 };
 // 提醒时间改变
 const selectTimer = (value) => {
@@ -196,7 +212,7 @@ const selectTimer = (value) => {
   model.value.minute = time.minute();
   model.value.seconds = time.second();
   model.value.ms = value;
-}
+};
 // 日期
 const selectDate = (value) => {
   let date = moment(value);
@@ -204,34 +220,33 @@ const selectDate = (value) => {
   model.value.waySetting.month = date.month() + 1;
   model.value.waySetting.day = date.date();
   model.value.waySetting.ms = value;
-}
+};
 // 周几
 const selectWeek = (value) => {
   model.value.waySetting.week = value as WeekModel;
   model.value.waySetting.ms = 0;
-}
+};
 // 日
 const selectDay = (value) => {
   model.value.waySetting.day = value as number;
   model.value.waySetting.ms = 0;
-}
+};
 // 确认点击
 const sureClick = () => {
   formRef.value.validate((errors) => {
     if (!errors) {
-      emits('ok', toRaw(model.value))
-      emits('update:show', false)
+      emits("ok", toRaw(model.value));
+      emits("update:show", false);
     }
-  })
-}
+  });
+};
 // 取消点击
 const cancelClick = () => {
-  emits('update:show', false)
-}
-
+  emits("update:show", false);
+};
 
 // 日历
-const today = ref(moment().milliseconds())
+const today = ref(moment().milliseconds());
 </script>
 
 <style lang="less">
