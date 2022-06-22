@@ -19,8 +19,14 @@
       <div class="one">
         <div class="function">
           <span class="icon-time" @click="showCycleSetting = true" />
+          <span
+            style="margin-left: 4px; font-size: 12px; color: #fff"
+            title="2022/12/22,车辆云项目组"
+            >2022/12/22,车辆云项目组</span
+          >
         </div>
       </div>
+
       <div class="two">{{ `${currentLength} / ${maxLength}` }}</div>
       <div class="three">
         <span class="icon-close" @click="closeClick" />
@@ -36,71 +42,71 @@
 </template>
 
 <script setup lang="ts">
-import { RemindModel, StatusModel, TodoModel } from "@/common/interface";
-import { NButton, NInput, useMessage } from "naive-ui";
-import { InputHTMLAttributes, onMounted, ref, Ref, toRaw } from "vue";
-import _ from "lodash";
-import CycleSetting from "../CycleSetting";
-const message = useMessage();
-const input: Ref<HTMLInputElement> = ref(null);
-let remind: RemindModel;
+import { RemindModel, StatusModel, TodoModel } from '@/common/interface'
+import { NButton, NInput, useMessage } from 'naive-ui'
+import { InputHTMLAttributes, onMounted, ref, Ref, toRaw } from 'vue'
+import _ from 'lodash'
+import CycleSetting from '../CycleSetting'
+const message = useMessage()
+const input: Ref<HTMLInputElement> = ref(null)
+let remind: RemindModel
 
 onMounted(() => {
-  input.value.focus();
-});
+  input.value.focus()
+})
 
-const maxLength = 200;
-const value = ref("");
-const currentLength = ref(0);
+const maxLength = 200
+const value = ref('')
+const currentLength = ref(0)
 const emits = defineEmits<{
-  (e: "close"): void;
-  (e: "ok", model: TodoModel): void;
-}>();
+  (e: 'close'): void
+  (e: 'ok', model: TodoModel): void
+}>()
 interface Props {
-  todo?: TodoModel;
+  todo?: TodoModel
 }
 
 const props = withDefaults(defineProps<Props>(), {
   todo: null,
-});
+})
 if (props.todo) {
-  value.value = props.todo.content;
-  currentLength.value = value.value.length;
-  remind = props.todo.remind;
+  value.value = props.todo.content
+  currentLength.value = value.value.length
+  remind = props.todo.remind
 }
 
 // 输入事件
-const inputInfo = (e) => {
-  value.value = e;
-  currentLength.value = e.length;
-};
+const inputInfo = e => {
+  value.value = e
+  currentLength.value = e.length
+}
 // 关闭事件
 const closeClick = () => {
-  emits("close");
-};
+  emits('close')
+}
 // 确认事件
 const okClick = () => {
   if (currentLength.value == 0) {
-    message.error("请输入日报内容");
-    return;
+    message.error('请输入日报内容')
+    return
   }
-  emits("ok", {
+  emits('ok', {
     content: value.value,
     status: StatusModel.未完成,
     remind: toRaw(remind),
-  });
-};
+  })
+}
 
 // 循环设置
 // 显示循环设置
-const showCycleSetting = ref(false);
+const showCycleSetting = ref(false)
 const cycleSettingOk = (v: RemindModel) => {
-  remind = v;
-};
+  remind = v
+}
 </script>
 
 <style lang="less" scoped>
-@border: 1px solid @base-color-3;
+@border: 1px solid @base-color-8;
 .add-todo-info {
   width: 100%;
   color: @base-color;
@@ -109,7 +115,7 @@ const cycleSettingOk = (v: RemindModel) => {
 
   .info-input {
     background: transparent;
-
+    color: #fff;
     :deep(.n-input__border) {
       border: none !important;
     }
@@ -122,7 +128,7 @@ const cycleSettingOk = (v: RemindModel) => {
     // --n-border-pressed: none !important;
     // --n-border-focus: none !important;
     --n-box-shadow-focus: none !important;
-    --n-text-color: @base-color !important;
+    --n-text-color: #fff !important;
     --n-text-color-hover: @base-color !important;
     --n-text-color-pressed: @base-color !important;
     --n-text-color-focus: @base-color !important;
@@ -146,6 +152,7 @@ const cycleSettingOk = (v: RemindModel) => {
     .two {
       width: 20%;
       text-align: right;
+      color: #fff;
       font-size: 12px;
       display: flex;
       justify-content: center;
@@ -155,6 +162,7 @@ const cycleSettingOk = (v: RemindModel) => {
       width: 20%;
       border-left: @border;
       display: flex;
+
       justify-content: space-around;
       align-items: center;
 
@@ -162,7 +170,7 @@ const cycleSettingOk = (v: RemindModel) => {
         width: 50%;
         text-align: center;
         height: 100%;
-
+        color: #fff;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -178,6 +186,8 @@ const cycleSettingOk = (v: RemindModel) => {
 
     .icon-time {
       font-size: 12px;
+      font-weight: bold;
+      color: #fff !important;
     }
   }
 
