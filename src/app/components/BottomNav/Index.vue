@@ -2,8 +2,8 @@
  * @Author: zeHua
  * @Date: 2022-06-21 11:15:09
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-22 17:52:10
- * @FilePath: \sticky-notes\src\app\components\BottomNav\Index.vue
+ * @LastEditTime: 2022-06-23 23:55:21
+ * @FilePath: /wintao/wintao-daily/src/app/components/BottomNav/Index.vue
 -->
 <template>
   <div class="bottom-nav">
@@ -19,18 +19,18 @@
 </template>
 
 <script setup lang="ts">
-import moment from "moment";
-import { NPopover, NBadge, NSpace } from "naive-ui";
-import { reactive, ref } from "vue";
-import TodoListModal from "../TodoListModal";
+import moment from 'moment'
+import { NPopover, NBadge, NSpace } from 'naive-ui'
+import { reactive, ref } from 'vue'
+import TodoListModal from '../TodoListModal'
 
-const show = ref(false);
-const type = ref(-1);
+const show = ref(false)
+const type = ref(-1)
 
 const showModal = (t: number) => {
-  type.value = t;
-  show.value = true;
-};
+  type.value = t
+  show.value = true
+}
 </script>
 
 <style lang="less" scoped>
@@ -40,9 +40,9 @@ const showModal = (t: number) => {
   width: 100%;
   height: 40px;
   display: flex;
-  border-top: 1px solid rgba(59, 59, 59, 0.8);
+  // border-top: 1px solid rgba(59, 59, 59, 0.8);
 
-  [class*="icon-"] {
+  [class*='icon-'] {
     -webkit-app-region: no-drag;
     cursor: pointer;
 
@@ -57,7 +57,7 @@ const showModal = (t: number) => {
 
   .left,
   .right {
-    [class*="icon-"] {
+    [class*='icon-'] {
       margin: 0 5px;
     }
   }

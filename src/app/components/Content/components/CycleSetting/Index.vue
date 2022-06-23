@@ -1,15 +1,16 @@
 <template>
   <transition name="slide-fade">
-    <div class="cycle-setting" v-show="show">
+    <div class="cycle-setting">
       <NCard class="content">
-        <n-tabs
+        <Type ref="typeRef" :currentDate="currentDate" />
+
+        <!-- <n-tabs
           default-value="select"
           size="large"
           display-directive="show"
           justify-content="space-evenly"
         >
           <n-tab-pane name="select" tab="选择">
-            <Type ref="typeRef" />
           </n-tab-pane>
           <n-tab-pane name="setting" tab="设置">
             <n-form
@@ -75,13 +76,13 @@
               </n-form-item>
             </n-form>
           </n-tab-pane>
-        </n-tabs>
+        </n-tabs> -->
         <template #footer>
           <n-button type="error" @click="cancelClick" style="width: 44%"
             >取消</n-button
           >
           <n-button type="success" @click="sureClick" style="width: 45%"
-            >保存</n-button
+            >确认</n-button
           >
         </template>
       </NCard>
@@ -90,8 +91,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, toRaw, watch } from "vue";
-import Type from "./components/type"; //选择类型
+import { onMounted, ref, Ref, toRaw, watch } from 'vue'
+import Type from './components/type' //选择类型
 import {
   NButton,
   NTabs,
@@ -107,199 +108,171 @@ import {
   FormInst,
   useMessage,
   NCalendar,
-} from "naive-ui";
+} from 'naive-ui'
 import {
   RemindModel,
   RemindWayModel,
   TodoModel,
   WeekModel,
-} from "@/common/interface";
-import moment from "moment";
+} from '@/common/interface'
+import moment from 'moment'
 
 interface Props {
-  show: boolean;
-  remind: RemindModel;
+  show: boolean
+  remind: RemindModel
+  currentDate: String
 }
 
 const props = withDefaults(defineProps<Props>(), {
   show: false,
   remind: null,
-});
+  currentDate: null,
+})
 
 // 表单设置
-const formRef: Ref<FormInst> = ref(null);
-const typeRef = ref(null);
-const message = useMessage();
+const formRef: Ref<FormInst> = ref(null)
+const typeRef = ref(null)
+console.log(props)
+
+const currentDate = ref(props.currentDate)
+const message = useMessage()
+console.log(currentDate)
 
 const formRules: FormRules = {
   way: {
     required: true,
-    message: "循环方式必填",
+    message: '循环方式必填',
   },
   ms: {
     required: true,
-    message: "提醒时间必填",
+    message: '提醒时间必填',
   },
   waySetting: {
     ms: {
       required: true,
-      message: "循环设置必填",
+      message: '循环设置必填',
     },
   },
-};
+}
 let model: Ref<RemindModel> = ref({
   waySetting: {},
-});
+})
 
 // if (props.remind) {
 //   model.value = props.remind;
 // }
-// 监听隐藏显示 刷新数据
-watch(
-  () => props.show,
-  (newV, oldV) => {
-    console.log(newV);
-    console.log(typeRef);
-
-    typeRef.value.getProjectName();
-  }
-);
 watch(
   () => props.remind,
   (newV, oldV) => {
-    model.value = newV;
-  }
-);
+    model.value = newV
+  },
+)
 
 const emits = defineEmits<{
-  (e: "close"): void;
-  (e: "ok", todo: RemindModel): void;
-  (e: "update:show", v: boolean): void;
-}>();
+  (e: 'close'): void
+  (e: 'ok', todo: RemindModel): void
+  (e: 'update:show', v: boolean): void
+}>()
 
 // 循环方式
-const selectWayOptions: Ref<SelectOption[]> = ref([]);
+const selectWayOptions: Ref<SelectOption[]> = ref([])
 for (let key in RemindWayModel) {
-  if (typeof RemindWayModel[key] == "string") {
+  if (typeof RemindWayModel[key] == 'string') {
     selectWayOptions.value.push({
       label: RemindWayModel[key],
       value: Number(key) as RemindWayModel,
-    });
+    })
   }
 }
 
 // 周
-const weekOptions: Ref<SelectOption[]> = ref([]);
+const weekOptions: Ref<SelectOption[]> = ref([])
 for (let key in WeekModel) {
-  if (typeof WeekModel[key] == "string") {
+  if (typeof WeekModel[key] == 'string') {
     weekOptions.value.push({
       label: WeekModel[key],
       value: key,
-    });
+    })
   }
 }
 
 // 日
 const dayOptions: Ref<SelectOption[]> = ref([
   {
-    label: "最后一天",
+    label: '最后一天',
     value: 0,
   },
-]);
+])
 for (let i = 1; i < 32; i++) {
   dayOptions.value.push({
-    label: i + "号",
+    label: i + '号',
     value: i,
-  });
+  })
 }
 
 // 循环方式改变
 const changeSelectWay = (value: RemindWayModel) => {
-  model.value.way = value;
+  model.value.way = value
   model.value.waySetting = {
     ms: undefined,
-  };
-};
-// 提醒时间改变
-const selectTimer = (value) => {
-  let time = moment(value);
-  model.value.hour = time.hour();
-  model.value.minute = time.minute();
-  model.value.seconds = time.second();
-  model.value.ms = value;
-};
-// 日期
-const selectDate = (value) => {
-  let date = moment(value);
-  model.value.waySetting.year = date.year();
-  model.value.waySetting.month = date.month() + 1;
-  model.value.waySetting.day = date.date();
-  model.value.waySetting.ms = value;
-};
-// 周几
-const selectWeek = (value) => {
-  model.value.waySetting.week = value as WeekModel;
-  model.value.waySetting.ms = 0;
-};
-// 日
-const selectDay = (value) => {
-  model.value.waySetting.day = value as number;
-  model.value.waySetting.ms = 0;
-};
-function vertDate(obj) {
-  //日期转yyyy-MM-dd
-  var date: any = new Date(obj);
-  var y = 1900 + date.getYear();
-  var m = "0" + (date.getMonth() + 1);
-  var d = "0" + date.getDate();
-  return (
-    y +
-    "-" +
-    m.substring(m.length - 2, m.length) +
-    "-" +
-    d.substring(d.length - 2, d.length)
-  );
+  }
 }
-
+// 提醒时间改变
+const selectTimer = value => {
+  let time = moment(value)
+  model.value.hour = time.hour()
+  model.value.minute = time.minute()
+  model.value.seconds = time.second()
+  model.value.ms = value
+}
+// 日期
+const selectDate = value => {
+  let date = moment(value)
+  model.value.waySetting.year = date.year()
+  model.value.waySetting.month = date.month() + 1
+  model.value.waySetting.day = date.date()
+  model.value.waySetting.ms = value
+}
+// 周几
+const selectWeek = value => {
+  model.value.waySetting.week = value as WeekModel
+  model.value.waySetting.ms = 0
+}
+// 日
+const selectDay = value => {
+  model.value.waySetting.day = value as number
+  model.value.waySetting.ms = 0
+}
 // 确认点击
-const sureClick = (val) => {
+const sureClick = val => {
   // if (!val) {
   //   return
   // }
 
-  typeRef.value.formRef.validate((errors) => {
+  typeRef.value.formRef.validate(errors => {
     if (!errors) {
-      // formRef.value.validate((error) => {
-      if (!errors) {
-        console.log("进入设置ok");
-        console.log(typeRef.value);
-
-        let data: any = {};
-        typeRef.value.projectList.map((v) => {
-          if (v.value === typeRef.value.model.projectName) {
-            data.pjName = v.label;
-          }
-        });
-        data.date = vertDate(typeRef.value.model.declareDate);
-        data = { ...data, ...typeRef.value.model };
-        emits("ok", toRaw(data));
-        emits("update:show", false);
-      }
-      // });
+      formRef.value.validate(error => {
+        if (!error) {
+          emits('ok', toRaw(model.value))
+          emits('update:show', false)
+        }
+      })
+      message.success('验证成功')
       // context.emit('ok', 'sucess')
     } else {
-      console.log(errors);
-      message.error("验证失败");
+      console.log(errors)
+      message.error('验证失败')
     }
-  });
-};
+  })
+}
+
 // 取消点击
 const cancelClick = () => {
-  emits("update:show", false);
-};
+  emits('update:show', false)
+}
 
 // 日历
-const today = ref(moment().milliseconds());
+const today = ref(moment().milliseconds())
 </script>
 
 <style lang="less">
@@ -324,18 +297,19 @@ const today = ref(moment().milliseconds());
 
 .cycle-setting {
   position: fixed;
-  top: 0;
+  top: 40px;
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
+  // display: flex;
   justify-content: center;
   align-items: center;
 
   .content {
-    border-radius: 10px;
-    width: 85%;
-    // height: 50%;
+    // border-radius: 10px;
+    width: 100%;
+    padding: 20px 0px;
+    height: calc(100% - 40px);
     background: white;
 
     --n-padding-bottom: 0px !important;

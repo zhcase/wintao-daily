@@ -1,33 +1,40 @@
+<!--
+ * @Author: zeHua
+ * @Date: 2022-06-21 21:42:41
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-23 23:29:35
+ * @FilePath: /wintao/wintao-daily/src/app/components/Content/components/TodoList/Index.vue
+-->
 <template>
   <div class="todo-list">
     <AddTodo @refresh="refresh" />
-    <div class="item-list">
+    <!-- <div class="item-list">
       <TodoItem v-for="(item, index) in list" :todo="item" @refresh="refresh" :key="index" />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import TodoItem from "../TodoItem";
-import AddTodo from "../AddTodo";
-import { provide, ref, toRaw } from "vue";
-import { TodoModel } from "@/common/interface";
-import { ipcRenderer } from "@/app/utils/render";
+import TodoItem from '../TodoItem'
+import AddTodo from '../AddTodo'
+import { provide, ref, toRaw } from 'vue'
+import { TodoModel } from '@/common/interface'
+import { ipcRenderer } from '@/app/utils/render'
 import { refresh as refreshApi } from '@app/utils/event'
-import { getTodo } from "@/app/utils/send";
-import moment from "moment";
+import { getTodo } from '@/app/utils/send'
+import moment from 'moment'
 
 refreshApi(() => {
-  refresh();
+  refresh()
 })
 
-const list = ref<Array<TodoModel>>([]);
+const list = ref<Array<TodoModel>>([])
 // 刷新数据
 const refresh = () => {
-  list.value = getTodo().msg;
+  list.value = getTodo().msg
   console.log(list.value)
-};
-refresh();
+}
+refresh()
 </script>
 
 <style lang="less" scoped>
