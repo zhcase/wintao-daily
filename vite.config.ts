@@ -1,3 +1,10 @@
+/*
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-23 14:35:10
+ * @FilePath: \sticky-notes\vite.config.ts
+ */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
@@ -55,7 +62,7 @@ export default defineConfig({
           app: vueOutDir
         },
         files: ['**'],
-        productName: "便签",
+        productName: "日报",
         appId: "com.bianqian.binbin",
         asar: true,
         extraResources: './resource/release',

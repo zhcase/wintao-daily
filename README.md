@@ -1,6 +1,13 @@
-# 使用 electron + vue3 开发的桌面便签应用
+<!--
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-23 14:35:20
+ * @FilePath: \sticky-notes\README.md
+-->
+# 使用 electron + vue3 开发的桌面日报应用
 
-一个使用 electron + vite2 + vue3 + TS + electron-builder 开发的便签应用
+一个使用 electron + vite2 + vue3 + TS + electron-builder 开发的日报应用
 
 ## 功能预览
 ![展示](./md/1.jpg)

@@ -2,8 +2,8 @@
  * @Author: zeHua
  * @Date: 2022-06-21 11:15:09
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-22 23:06:38
- * @FilePath: /wintao/wintao-daily/src/app/components/Setting/Login/index.vue
+ * @LastEditTime: 2022-06-23 19:19:04
+ * @FilePath: \sticky-notes\src\app\components\Setting\Login\index.vue
 -->
 <template>
   <div class="wintao-login">
@@ -92,7 +92,8 @@
 <script>
 // import { defineComponent, onMounted, reactive, ref } from 'vue'
 // import { NButton, NInput, useMessage } from 'naive-ui'
-import axios from 'axios'
+import axios from "axios";
+import { Account } from "@/app/api/account.ts";
 // export default defineComponent({
 //   components: {
 //     NButton,
@@ -189,7 +190,7 @@ import {
   ref,
   defineEmits,
   getCurrentInstance,
-} from 'vue'
+} from "vue";
 import {
   useMessage,
   NForm,
@@ -199,7 +200,7 @@ import {
   NResult,
   NAlert,
   NSpin,
-} from 'naive-ui'
+} from "naive-ui";
 
 export default defineComponent({
   components: {
@@ -215,26 +216,26 @@ export default defineComponent({
     handleLogin: null,
   },
   setup(props, context) {
-    const formRef = ref(null)
-    const imageUrl = ref(null)
-    const isShowLoading = ref(false)
-    const rPasswordFormItemRef = ref(null)
-    const message = useMessage()
+    const formRef = ref(null);
+    const imageUrl = ref(null);
+    const isShowLoading = ref(false);
+    const rPasswordFormItemRef = ref(null);
+    const message = useMessage();
 
     const modelRef = ref({
       useraccount: null,
       password: null,
       // code: null,
-    })
+    });
     function validatePasswordStartWith(rule, value) {
       return (
         !!modelRef.value.password &&
         modelRef.value.password.startsWith(value) &&
         modelRef.value.password.length >= value.length
-      )
+      );
     }
     function validatePasswordSame(rule, value) {
-      return value === modelRef.value.password
+      return value === modelRef.value.password;
     }
     //     // 获取图片路径
     // function getImageUrl() {
@@ -245,13 +246,13 @@ export default defineComponent({
       useraccount: [
         {
           required: true,
-          message: '请输入用户名',
+          message: "请输入用户名",
         },
       ],
       password: [
         {
           required: true,
-          message: '请输入密码',
+          message: "请输入密码",
         },
       ],
       // code: [
@@ -277,51 +278,51 @@ export default defineComponent({
       //     trigger: ['blur', 'password-input'],
       //   },
       // ],
-    }
+    };
 
     function handleValidateButtonClick(e) {
-      e.preventDefault()
-      isShowLoading.value = true
-      console.log(isShowLoading)
+      e.preventDefault();
+      isShowLoading.value = true;
+      console.log(isShowLoading);
       setTimeout(() => {
-        isShowLoading.value = false
-      }, 20000)
-      formRef.value.validate(errors => {
+        isShowLoading.value = false;
+      }, 20000);
+      formRef.value.validate(async (errors) => {
         if (!errors) {
-          axios
-            .post('http://192.168.0.83:5000/login', {
-              useraccount: modelRef.value.useraccount,
-              password: modelRef.value.password,
-            })
-            .then(function (response) {
-              let data = response.data
-              if (data.status == 'ok') {
-                isShowLoading.value = false
-
-                message.success('登录成功')
-                localStorage.setItem('sessionId', data.Cookie)
-                localStorage.setItem('user', JSON.stringify(modelRef.value))
-
-                context.emit('handleLogin')
-                window.sessionId = data.Cookie
-              } else {
-                isShowLoading.value = false
-                message.error(data.message)
-              }
-            })
-            .catch(function (error) {
-              console.log(error)
-            })
+          let params = {
+            useraccount: modelRef.value.useraccount,
+            password: modelRef.value.password,
+          };
+          let response = await Account.Login(params);
+          let data = response;
+          if (data.status == "ok") {
+            isShowLoading.value = false;
+            message.success("登录成功");
+            localStorage.setItem("sessionId", data.Cookie);
+            localStorage.setItem("user", JSON.stringify(modelRef.value));
+            context.emit("handleLogin");
+            window.sessionId = data.Cookie;
+          } else {
+            isShowLoading.value = false;
+            message.error(data.message);
+          }
         } else {
-          console.log(errors)
+          console.log(errors);
           // message.error("验证失败");
         }
-      })
+      });
     }
 
     onMounted(() => {
+      let userInfo = localStorage.getItem("user");
       // getImageUrl();
-    })
+      // 如果有用户信息自动填充
+      if (userInfo) {
+        userInfo = JSON.parse(userInfo);
+        modelRef.value.useraccount = userInfo.useraccount;
+        modelRef.value.password = userInfo.password;
+      }
+    });
 
     return {
       formRef,
@@ -334,12 +335,12 @@ export default defineComponent({
       handleValidateButtonClick,
       handlePasswordInput() {
         if (modelRef.value.reenteredPassword) {
-          rPasswordFormItemRef.value?.validate({ trigger: 'password-input' })
+          rPasswordFormItemRef.value?.validate({ trigger: "password-input" });
         }
       },
-    }
+    };
   },
-})
+});
 </script>
 
 <style>

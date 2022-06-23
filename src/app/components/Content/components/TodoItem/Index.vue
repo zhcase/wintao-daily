@@ -10,48 +10,79 @@
     <div class="show-item" v-if="!isEdit">
       <n-checkbox
         v-if="check"
-        :checked="todo.status == StatusModel.已完成 || todo.lastComplateDate == moment().format('YYYY-MM-DD')"
+        :checked="
+          todo.status == StatusModel.已完成 ||
+          todo.lastComplateDate == moment().format('YYYY-MM-DD')
+        "
         :on-update:checked="complateClick"
       />
-      <n-popover to="#popover" trigger="hover" raw :show-arrow="false" width="trigger">
+      <n-popover
+        to="#popover"
+        trigger="hover"
+        raw
+        :show-arrow="false"
+        width="trigger"
+      >
         <template #trigger>
           <div
             @dblclick.left="dbClickItem"
             class="text"
             :class="{
-              'check-text': todo.status == StatusModel.已完成 || todo.lastComplateDate == moment().format('YYYY-MM-DD'),
+              'check-text':
+                todo.status == StatusModel.已完成 ||
+                todo.lastComplateDate == moment().format('YYYY-MM-DD'),
             }"
-          >{{ todo?.content }}</div>
+          >
+            {{ todo?.content }}
+          </div>
         </template>
         <!-- <div class="todo-popover-info" v-if="todo.remind">
           <div>{{ RemindWayModel[todo.remind.way] }}</div>
         </div>-->
       </n-popover>
       <div class="icons">
-        <span v-if="todo.remind" class="icon-time" @click="showCycleSettingClick" />
+        <span
+          v-if="todo.remind"
+          class="icon-time"
+          @click="showCycleSettingClick"
+        />
       </div>
     </div>
     <AddTodoInfo v-else :todo="todo" @close="closeClick" @ok="okClick" />
-    <CycleSetting :remind="remind" v-model:show="showCycleSetting" @ok="remindOkClick" />
+    <CycleSetting
+      :remind="remind"
+      v-model:show="showCycleSetting"
+      @ok="remindOkClick"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { NPopover } from 'naive-ui'
+import { NPopover } from "naive-ui";
 import { playComplateAudio, playRemoveAudio } from "@/app/utils/audio";
 import { getTodoItemMenu, MenuCallbackType } from "@/app/utils/menu";
 import remote from "@/app/utils/render";
-import { cancelComplateTodo, complateTodo, editTodo, remTodo } from "@/app/utils/send";
-import { RemindModel, StatusModel, TodoModel, RemindWayModel } from "@/common/interface";
+import {
+  cancelComplateTodo,
+  complateTodo,
+  editTodo,
+  remTodo,
+} from "@/app/utils/send";
+import {
+  RemindModel,
+  StatusModel,
+  TodoModel,
+  RemindWayModel,
+} from "@/common/interface";
 import { NCheckbox, useMessage } from "naive-ui";
 import { getCurrentInstance, inject, Ref, ref, toRaw, watch } from "vue";
 import AddTodoInfo from "../AddTodoInfo";
 import CycleSetting from "../CycleSetting/Index.vue";
-import moment from 'moment';
+import moment from "moment";
 
 const message = useMessage();
 
-const remind: Ref<RemindModel> = ref(null)
+const remind: Ref<RemindModel> = ref(null);
 
 interface Props {
   todo: TodoModel;
@@ -71,11 +102,14 @@ const emits = defineEmits<{
 // 循环设置（提醒设置）
 const showCycleSetting = ref(false);
 const remindOkClick = (v: RemindModel) => {
-  let model = toRaw(props.todo)
+  alert(223344);
+  let model = toRaw(props.todo);
+  console.log(v);
+
   model.status = StatusModel.未完成;
   model.remind = v;
-  okClick(model)
-}
+  okClick(model);
+};
 
 // 是否是编辑
 const isEdit = ref(false);
@@ -110,7 +144,7 @@ const okClick = (model: TodoModel) => {
 const showCycleSettingClick = () => {
   remind.value = props.todo.remind;
   showCycleSetting.value = true;
-}
+};
 // 显示菜单
 const menuItemClick = (id: MenuCallbackType, todo: TodoModel) => {
   switch (id) {
@@ -134,16 +168,16 @@ const menuItemClick = (id: MenuCallbackType, todo: TodoModel) => {
       message.success("复制成功");
       break;
     case MenuCallbackType.添加提醒:
-      showCycleSettingClick()
+      showCycleSettingClick();
       break;
     case MenuCallbackType.删除提醒:
-      remindOkClick(null)
+      remindOkClick(null);
       break;
   }
 };
 const showMenu = () => {
   if (props.menu) {
-    props.menu(props.todo)
+    props.menu(props.todo);
     return;
   }
   if (isEdit.value) return;

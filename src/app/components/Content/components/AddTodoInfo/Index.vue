@@ -22,7 +22,7 @@
           <span
             style="margin-left: 4px; font-size: 12px; color: #fff"
             title="2022/12/22,车辆云项目组"
-            >2022/12/22,车辆云项目组</span
+            >{{ currentConfig.date }},{{ currentConfig.pjName }}</span
           >
         </div>
       </div>
@@ -42,67 +42,70 @@
 </template>
 
 <script setup lang="ts">
-import { RemindModel, StatusModel, TodoModel } from '@/common/interface'
-import { NButton, NInput, useMessage } from 'naive-ui'
-import { InputHTMLAttributes, onMounted, ref, Ref, toRaw } from 'vue'
-import _ from 'lodash'
-import CycleSetting from '../CycleSetting'
-const message = useMessage()
-const input: Ref<HTMLInputElement> = ref(null)
-let remind: RemindModel
+import { RemindModel, StatusModel, TodoModel } from "@/common/interface";
+import { NButton, NInput, useMessage } from "naive-ui";
+import { InputHTMLAttributes, onMounted, ref, Ref, toRaw } from "vue";
+import _ from "lodash";
+import CycleSetting from "../CycleSetting";
+const message = useMessage();
+const input: Ref<HTMLInputElement> = ref(null);
+let remind: RemindModel;
 
 onMounted(() => {
-  input.value.focus()
-})
+  input.value.focus();
+});
 
-const maxLength = 200
-const value = ref('')
-const currentLength = ref(0)
+const maxLength = 200;
+const value = ref("");
+const currentConfig: any = ref({}); //当前配置
+const currentLength = ref(0);
 const emits = defineEmits<{
-  (e: 'close'): void
-  (e: 'ok', model: TodoModel): void
-}>()
+  (e: "close"): void;
+  (e: "ok", model: TodoModel): void;
+}>();
 interface Props {
-  todo?: TodoModel
+  todo?: TodoModel;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   todo: null,
-})
+});
 if (props.todo) {
-  value.value = props.todo.content
-  currentLength.value = value.value.length
-  remind = props.todo.remind
+  value.value = props.todo.content;
+  currentLength.value = value.value.length;
+  remind = props.todo.remind;
 }
 
 // 输入事件
-const inputInfo = e => {
-  value.value = e
-  currentLength.value = e.length
-}
+const inputInfo = (e) => {
+  value.value = e;
+  currentLength.value = e.length;
+};
 // 关闭事件
 const closeClick = () => {
-  emits('close')
-}
+  emits("close");
+};
 // 确认事件
 const okClick = () => {
   if (currentLength.value == 0) {
-    message.error('请输入日报内容')
-    return
+    message.error("请输入日报内容");
+    return;
   }
-  emits('ok', {
+  emits("ok", {
     content: value.value,
     status: StatusModel.未完成,
     remind: toRaw(remind),
-  })
-}
+  });
+};
 
 // 循环设置
 // 显示循环设置
-const showCycleSetting = ref(false)
+const showCycleSetting = ref(false);
 const cycleSettingOk = (v: RemindModel) => {
-  remind = v
-}
+  currentConfig.value = v;
+  console.log(currentConfig);
+  remind = v;
+};
 </script>
 
 <style lang="less" scoped>
