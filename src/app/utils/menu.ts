@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { StatusModel, TodoModel } from '@/common/interface';
 import remote, { ipcRenderer } from './render'
-import { getImg, openSetting, quit } from './send';
+import { getImg, openSetting, quit,quitLogin } from './send';
 const { Menu } = remote;
 
 type MenuFunctionType = (id: MenuCallbackType, todo?: TodoModel) => void;
@@ -101,6 +101,11 @@ export const getTopNavMenu = (click: MenuFunctionType) => {
             label: "设置",
             click: () => openSetting(),
             icon: getImg('static/image/menu/setting.png')
+        },
+        {
+            label: "退出登录",
+            click: () => quitLogin(),
+            icon: getImg('static/image/menu/quit.png')
         },
         { type: 'separator' }, {
             label: "退出程序",

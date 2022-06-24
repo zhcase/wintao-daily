@@ -2,25 +2,25 @@
  * @Author: zeHua
  * @Date: 2022-06-21 11:15:09
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-23 19:19:04
+ * @LastEditTime: 2022-06-24 17:48:01
  * @FilePath: \sticky-notes\src\app\components\Setting\Login\index.vue
 -->
 <template>
   <div class="wintao-login">
-    <n-spin :show="isShowLoading" description="登录中，请耐心等待...">
-      <n-form ref="formRef" :model="model" :rules="rules" style="padding: 20px">
-        <n-form-item path="useraccount" label="用户名">
-          <n-input v-model:value="model.useraccount" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="password" label="密码">
-          <n-input
-            v-model:value="model.password"
-            type="password"
-            @input="handlePasswordInput"
-            @keydown.enter.prevent
-          />
-        </n-form-item>
-        <!--
+    <!-- <n-spin :show="isShowLoading" description="登录中，请耐心等待..."> -->
+    <n-form ref="formRef" :model="model" :rules="rules" style="padding: 20px">
+      <n-form-item path="useraccount" label="用户名">
+        <n-input v-model:value="model.useraccount" @keydown.enter.prevent />
+      </n-form-item>
+      <n-form-item path="password" label="密码">
+        <n-input
+          v-model:value="model.password"
+          type="password"
+          @input="handlePasswordInput"
+          @keydown.enter.prevent
+        />
+      </n-form-item>
+      <!--
     <n-form-item path="code" label="验证码">
       <n-input
         v-model:value="model.code"
@@ -32,22 +32,22 @@
       <img :src="imageUrl" style="height: 100%; width: 30%" />
     </n-form-item> -->
 
-        <n-row>
-          <n-col>
-            <div>
-              <n-button
-                round
-                type="primary"
-                @click="handleValidateButtonClick"
-                style="width: 100%"
-              >
-                登 录
-              </n-button>
-            </div>
-          </n-col>
-        </n-row>
-      </n-form>
-    </n-spin>
+      <n-row>
+        <n-col>
+          <div>
+            <n-button
+              round
+              type="primary"
+              @click="handleValidateButtonClick"
+              style="width: 100%"
+            >
+              登 录
+            </n-button>
+          </div>
+        </n-col>
+      </n-row>
+    </n-form>
+    <!-- </n-spin> -->
     <n-result
       v-if="false"
       status="success"
@@ -282,13 +282,14 @@ export default defineComponent({
 
     function handleValidateButtonClick(e) {
       e.preventDefault();
-      isShowLoading.value = true;
-      console.log(isShowLoading);
-      setTimeout(() => {
-        isShowLoading.value = false;
-      }, 20000);
+
       formRef.value.validate(async (errors) => {
         if (!errors) {
+          // isShowLoading.value = true;
+          console.log(isShowLoading);
+          // setTimeout(() => {
+          //   isShowLoading.value = false;
+          // }, 20000);
           let params = {
             useraccount: modelRef.value.useraccount,
             password: modelRef.value.password,

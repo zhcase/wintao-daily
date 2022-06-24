@@ -7,6 +7,11 @@ import remote, { ipcRenderer } from "./render";
 export const quit = () => {
     return ipcRenderer.sendSync(bridgeKey.quit)
 }
+// 退出登录
+export const quitLogin = () => {
+   localStorage.clear();
+   window.location.reload();
+}
 
 // 打开设置面板
 export const openSetting = () => {

@@ -1,3 +1,10 @@
+/*
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-24 17:49:36
+ * @FilePath: \sticky-notes\src\main\utils\window.ts
+ */
 import { CreateWindowOption } from '@/common/interface'
 import { UserSetting } from '@/common/setting'
 import { solveWindowShake } from '@/common/utils/window'
@@ -37,7 +44,7 @@ export const createWindow = (option: CreateWindowOption): BrowserWindow => {
     window.loadURL(option.url)
     if (option.dev) {
         //打开开发工具
-        window.webContents.openDevTools({ mode: "detach" });
+        // window.webContents.openDevTools({ mode: "detach" });
     }
     if (option.show) {
         window.show()

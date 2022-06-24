@@ -2,15 +2,20 @@
  * @Author: zeHua
  * @Date: 2021-11-04 13:33:27
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-23 19:48:21
+ * @LastEditTime: 2022-06-24 17:49:11
  * @FilePath: \sticky-notes\src\app\utils\request.ts
  */
 import axios from "axios";
 // import QS from 'qs';
 /* tslint:disable  */
 import { login } from '../utils/account'
+import { ElMessage } from 'element-plus'
+import { useMessage } from 'naive-ui'
+const message = useMessage()
 
 axios.defaults.baseURL = "/";
+
+
 axios.interceptors.request.use(
   (config) => {
     //  请求头
@@ -48,6 +53,11 @@ axios.interceptors.response.use(
         
         // alert(1)
         login();
+
+     
+    }else if(res.code==500){
+      ElMessage.error({message:res.message,center: true      })
+
     }
   },
   (error) => {
@@ -59,6 +69,8 @@ axios.interceptors.response.use(
       //     // message.error("登录信息已过期，请重新登录！");
       // }
     } else if (error.response && error.response.status === 500) {
+      
+
       return Promise.reject(error);
     } else if (error.message && error.message.indexOf("timeout") > -1) {
       //   message.error("网络超时!");

@@ -2,62 +2,127 @@
  * @Author: zeHua
  * @Date: 2022-06-23 21:34:37
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-24 01:14:29
- * @FilePath: /wintao/wintao-daily/src/app/components/Calendar/index.vue
+ * @LastEditTime: 2022-06-24 17:36:30
+ * @FilePath: \sticky-notes\src\app\components\Calendar\index.vue
 -->
 <template>
   <div class="wintao-p-calender">
-    <div class="wintao-p-calender-content">
-      <el-calendar :range="dateRange" :disabledDate="disabledDateFun">
-        <template #header="{ date }">
-          {{ currentYyMm }}
-        </template>
-        <template #dateCell="{ data }">
-          <p
-            style="position: relative; text-align: center"
-            :class="data.isSelected ? 'is-selected' : ''"
-            @click="handleClickDate(data)"
-          >
-            {{ data.day.split('-').slice(2).join('-') }}
-            <i
-              :class="computeHasDate(data) ? 'edit-active' : 'edit-no'"
-              class="edit-round"
-            ></i>
-          </p>
-        </template>
-      </el-calendar>
-    </div>
+    <n-spin
+      :show="!isShowCalendar"
+      description="加载中，请耐心等待..."
+      style="mrgin-top: 100px"
+    >
+      <div class="wintao-p-calender-content">
+        <el-calendar :range="dateRange" :disabledDate="disabledDateFun">
+          <template #header="{ date }">
+            {{ currentYyMm }}
+          </template>
+          <template #dateCell="{ data }">
+            <p
+              style="position: relative; text-align: center"
+              :class="data.isSelected ? 'is-selected' : ''"
+              @click="handleClickDate(data)"
+            >
+              {{ data.day.split("-").slice(2).join("-") }}
+              <i
+                :class="computeHasDate(data) ? 'edit-active' : 'edit-no'"
+                class="edit-round"
+              ></i>
+            </p>
+          </template>
+        </el-calendar>
+      </div>
+    </n-spin>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-const array = ['2022-06-04', '2022-06-07', '2022-06-22']
-const dateRange = ref([]) //日期范围
-const currentYyMm = ref('') //当前年月
+import { Account } from "@/app/api/account";
+import { onMounted, reactive, ref } from "vue";
+import { NSpin } from "naive-ui";
+const dateArray = [];
+const dateRange = ref([]); //日期范围
+const currentYyMm = ref(""); //当前年月
+const isShowCalendar = ref(false);
+let currentDate = new Date();
+let user: any = localStorage.getItem("user");
+user = JSON.parse(user);
+let y = currentDate.getFullYear(); //年
+let m = currentDate.getMonth() + 1; //月
+let d = currentDate.getDate(); // 日
+dateRange.value[0] = y + "," + (m - 1) + "," + d;
+dateRange.value[1] = y + "," + m + "," + d;
+console.log(dateRange);
+currentYyMm.value = y + "年" + m + "月";
+console.log(currentYyMm);
 
-let currentDate = new Date()
+const getDaily = async () => {
+  isShowCalendar.value = false;
+  // http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList
+  let data = {
+    url: "http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList",
+    cookie: localStorage.getItem("sessionId"),
+    method: "POST",
+    data: {
+      startDate: `${y}-${m - 1}-${d}`,
+      endDate: `${y}-${m}-${d}`,
+      // staffName: user.useraccount,
+      userAccount: user && user.useraccount,
+      page: 1,
+      rows: 100,
+    },
+  };
+  let result: any = await Account.Proxy(data);
+  result = result.data;
+  let workArray = [];
 
-let y = currentDate.getFullYear() //年
-let m = currentDate.getMonth() + 1 //月
-let d = currentDate.getDate() // 日
-dateRange.value[0] = y + ',' + m + ',' + '1'
-dateRange.value[1] = y + ',' + m + ',' + d
-console.log(dateRange)
-currentYyMm.value = y + '年' + m + '月'
-console.log(currentYyMm)
+  result.rows.map((item) => {
+    console.log(item);
+    let currentDateTime = item.reportDate.substring(0, 10);
 
-const computeHasDate = data => {
-  return array.indexOf(data.day) > -1
-}
-const emitDate = defineEmits(['updateDate'])
+    if (item.wordType === 1) {
+      workArray.push({
+        date: currentDateTime,
+        workHour: item.workHour,
+      });
+    }
+  });
+  let maxWorkTime = {};
+  workArray.map((item) => {
+    if (maxWorkTime[item.date]) {
+      maxWorkTime[item.date] += item.workHour;
+    } else {
+      maxWorkTime[item.date] = item.workHour;
+    }
+  });
+  for (let item in maxWorkTime) {
+    console.log(maxWorkTime[item]);
+    if (maxWorkTime[item] >= 7.5) {
+      console.log(maxWorkTime[item]);
+      console.log(item);
 
-const handleClickDate = data => {
-  emitDate('updateDate', data)
-}
-const disabledDateFun = time => {
-  return time.getTime() < new Date().getTime()
-}
+      dateArray.push(item);
+    }
+  }
+  console.log(dateArray);
+  isShowCalendar.value = true;
+};
+getDaily();
+
+const computeHasDate = (data) => {
+  return dateArray.indexOf(data.day) > -1;
+};
+const emitDate = defineEmits(["updateDate"]);
+
+const handleClickDate = (data) => {
+  emitDate("updateDate", data);
+};
+const disabledDateFun = (time) => {
+  return time.getTime() < new Date().getTime();
+};
+defineExpose({
+  getDaily,
+});
 </script>
 
 <style scoped>
@@ -65,7 +130,7 @@ const disabledDateFun = time => {
   color: #1989fa;
 }
 .wintao-p-calender {
-  height: 100%;
+  height: calc(100% - 40px);
   top: 40px;
   left: 0;
   position: fixed;

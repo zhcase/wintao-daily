@@ -6,8 +6,11 @@
  * @FilePath: \sticky-notes\src\app\utils\account.ts
  */
 import { Account } from "@/app/api/account";
+import { useMessage } from 'naive-ui'
 
-export async function login(){
+
+export async function login(){    
+    const message = useMessage()
     interface user {
         useraccount:string,
         password:string
@@ -23,6 +26,11 @@ export async function login(){
           };
           let data:any = await Account.Login(params);          
           localStorage.setItem("sessionId", data.Cookie);
+          location.reload();
+
+    }else{
+        location.reload();
+
     }
  
 }

@@ -1,3 +1,10 @@
+/*
+ * @Author: zeHua
+ * @Date: 2022-06-21 11:15:09
+ * @LastEditors: zeHua
+ * @LastEditTime: 2022-06-24 15:31:07
+ * @FilePath: \sticky-notes\src\main\manager\task.ts
+ */
 import { bridgeKey } from "@/common/bridge";
 import { RemindWayModel, TodoModel } from "@/common/interface";
 import { getNowMomentDate } from "@/common/utils/time";
@@ -71,8 +78,8 @@ const start = () => {
     checkToTip();
     // 检查是否是明天了
     checkIsTomorrow();
-
-    timer = setTimeout(() => {
+    
+    timer = setTimeout(() => {        
         start()
     }, 1000);
 }

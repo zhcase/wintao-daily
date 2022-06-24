@@ -102,7 +102,6 @@ const emits = defineEmits<{
 // 循环设置（提醒设置）
 const showCycleSetting = ref(false);
 const remindOkClick = (v: RemindModel) => {
-  alert(223344);
   let model = toRaw(props.todo);
   console.log(v);
 
