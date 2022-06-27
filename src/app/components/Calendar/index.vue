@@ -2,7 +2,7 @@
  * @Author: zeHua
  * @Date: 2022-06-23 21:34:37
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-24 17:36:30
+ * @LastEditTime: 2022-06-27 15:43:32
  * @FilePath: \sticky-notes\src\app\components\Calendar\index.vue
 -->
 <template>
@@ -32,6 +32,15 @@
           </template>
         </el-calendar>
       </div>
+      <div class="work-content">
+        <el-input
+          v-model="workContent"
+          :rows="4"
+          clearable
+          type="textarea"
+          placeholder="请输入今日工作内容"
+        />
+      </div>
     </n-spin>
   </div>
 </template>
@@ -41,6 +50,7 @@ import { Account } from "@/app/api/account";
 import { onMounted, reactive, ref } from "vue";
 import { NSpin } from "naive-ui";
 const dateArray = [];
+const workContent = ref("");
 const dateRange = ref([]); //日期范围
 const currentYyMm = ref(""); //当前年月
 const isShowCalendar = ref(false);
@@ -122,6 +132,7 @@ const disabledDateFun = (time) => {
 };
 defineExpose({
   getDaily,
+  workContent,
 });
 </script>
 
@@ -138,7 +149,7 @@ defineExpose({
   background-color: #fff;
 }
 .wintao-p-calender-content {
-  height: 300px;
+  height: auto;
   position: relative;
 }
 .wintao-p-calender .el-calendar {
@@ -165,5 +176,9 @@ defineExpose({
   position: absolute;
   bottom: -4px;
   width: 5px;
+}
+.work-content {
+  padding: 0 20px;
+  /* margin */
 }
 </style>

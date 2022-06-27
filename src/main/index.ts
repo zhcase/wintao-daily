@@ -13,11 +13,13 @@ import { baseUrl } from "./config";
 import "@/common/load";
 import { bridgeKey } from "@/common/bridge";
 import "./event";
-import { checkIsFirstRun, createTipWindow, createWindow } from "./utils/window";
+import { checkIsFirstRun, createTipWindow, createWindow,createClockTipsWindow } from "./utils/window";
 import start from "./manager/task";
 import { getImagePath } from "./manager/file";
 import { StatusModel } from "@/common/interface";
 import { addTodo } from "./manager/todo";
+import { ElNotification } from "element-plus";
+
 
 // var cmd = process.argv[1];
 
@@ -32,8 +34,9 @@ let tray: Tray;
 
 // 创建主窗口
 const initMain = () => {
+  
   mainWindow = createWindow({
-    url: baseUrl,
+    url: baseUrl ,
     dev: true,
     show: true,
     skipTaskbar: true,
@@ -55,15 +58,16 @@ const initMain = () => {
 };
 // 创建Tip窗口
 const initTip = () => {
+  console.log(baseUrl);
+
   let win = createTipWindow({
-    url: "",
-    dev: false,
+    url: baseUrl + '#/clock',
+    dev: true,
     show: true,
     skipTaskbar: true,
   });
-  win.webContents.on("did-finish-load", () => {
-    start(win);
-  });
+ 
+
 };
 // 创建托盘
 const initTray = () => {

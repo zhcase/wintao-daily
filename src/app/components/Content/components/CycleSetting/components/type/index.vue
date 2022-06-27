@@ -105,11 +105,15 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    workContent: {
+      type: String,
+      default: "",
+    },
   },
   setup(props, context) {
     const formRef = ref(null);
-
-    const { currentDate } = props;
+    console.log(props);
+    const { currentDate, workContent } = props;
 
     const rPasswordFormItemRef = ref(null);
     const projectList = ref([]); //项目列表
@@ -123,7 +127,7 @@ export default defineComponent({
       projectName: null, // 项目名称
       funName: null, // 模块名称
       planListForm: [], //计划列表
-      workContent: "",
+      workContent: workContent,
     });
     function validatePasswordStartWith(rule, value) {
       return (

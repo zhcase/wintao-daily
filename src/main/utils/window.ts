@@ -1,10 +1,3 @@
-/*
- * @Author: zeHua
- * @Date: 2022-06-21 11:15:09
- * @LastEditors: zeHua
- * @LastEditTime: 2022-06-24 17:49:36
- * @FilePath: \sticky-notes\src\main\utils\window.ts
- */
 import { CreateWindowOption } from '@/common/interface'
 import { UserSetting } from '@/common/setting'
 import { solveWindowShake } from '@/common/utils/window'
@@ -59,6 +52,8 @@ export const createWindow = (option: CreateWindowOption): BrowserWindow => {
 }
 
 
+
+
 /**
  * 创建提醒窗口
  * @param option 基本信息
@@ -69,22 +64,92 @@ export const createTipWindow = (option: CreateWindowOption, widthSize: number = 
     // 指定提醒窗口的宽度
     let s = screen.getPrimaryDisplay().workAreaSize;
     const seeWidth = s.width * widthSize;
+    console.log( s.width - Math.round(seeWidth));
+    
     option = Object.assign(option, {
-        url: baseUrl + '#/tip',
-        width: seeWidth * 2,
+        url: baseUrl + '#/clock',
+        width:400,
         x: s.width - Math.round(seeWidth),
         y: 0,
-        minHeight: s.height,
+        minHeight: 150,
         maxHeight: 0,
         minWidth: 0,
         maxWidth: 0,
-        height: s.height,
+        height: 200,
         resizable: false,
     } as CreateWindowOption)
     let win = createWindow(option)
+  
+               
+
+    setInterval(() => {
+        let myDate = new Date();
+        let h = myDate.getHours(); //获取当前小时数(0-23)
+        let m = myDate.getMinutes(); // 获取分钟数
+
+            
+        if (h == 18 && m == 55) {
+                win.showInactive()
+            
+            }else{
+                    win.hide()
+                
+          
+            }
+    },1500);
     // 设置窗口鼠标穿透
     win.setIgnoreMouseEvents(true, { forward: true })
+    solveWindowShake(win);
+
     return win;
+}
+
+
+
+
+// 创建闹钟提示框
+
+
+
+// 创建窗口
+export const createClockTipsWindow = (option: CreateWindowOption): BrowserWindow => {
+    const setting = new UserSetting();
+    option = Object.assign({
+        width: 320,
+        height: 700,
+        maxWidth: 320,
+        minHeight: 500,
+        minimizable: false,
+        maximizable: false,
+        transparent: true,
+        frame: false,
+        useContentSize: true,
+        // skipTaskbar: true,
+        alwaysOnTop: setting.base.alwaystop,
+        webPreferences: {
+            // 这两个都需要 不然就报错  开启node
+            contextIsolation: false,
+            nodeIntegration: true,
+            // 跨域
+            webSecurity: false,
+        }
+    }, option)
+    const window = new BrowserWindow({ ...option })
+    window.loadURL(option.url)
+    if (option.dev) {
+        //打开开发工具
+        // window.webContents.openDevTools({ mode: "detach" });
+    }
+    if (option.show) {
+        window.show()
+    }
+    // 注入远程模块
+    injectRemote(window)
+    // 添加窗口
+    addWindow(window);
+    // 解决拖拽抖动问题
+    solveWindowShake(window);
+    return window;
 }
 
 /**

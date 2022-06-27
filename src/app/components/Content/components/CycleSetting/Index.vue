@@ -3,8 +3,20 @@
     <n-spin :show="isShowLoading" description="添加中，请耐心等待...">
       <div class="cycle-setting">
         <NCard class="content">
-          <Type ref="typeRef" :currentDate="currentDate" />
-
+          <Type
+            ref="typeRef"
+            :currentDate="currentDate"
+            :workContent="workContent"
+          />
+          <n-tag
+            type="success"
+            size="small"
+            class="work-detail"
+            @click="handleDetail"
+            round
+          >
+            明细
+          </n-tag>
           <!-- <n-tabs
           default-value="select"
           size="large"
@@ -112,6 +124,7 @@ import {
   FormInst,
   useMessage,
   NCalendar,
+  NTag,
 } from "naive-ui";
 import {
   RemindModel,
@@ -125,12 +138,14 @@ interface Props {
   show: boolean;
   remind: RemindModel;
   currentDate: String;
+  workContent: String;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   show: false,
   remind: null,
   currentDate: null,
+  workContent: null,
 });
 
 // 表单设置
@@ -141,6 +156,7 @@ console.log(props);
 
 const currentDate = ref(props.currentDate);
 const message = useMessage();
+const workContent = ref(props.workContent);
 
 const formRules: FormRules = {
   way: {
@@ -189,6 +205,8 @@ for (let key in RemindWayModel) {
   }
 }
 
+// 查看明细
+const handleDetail = (val) => {};
 // 周
 const weekOptions: Ref<SelectOption[]> = ref([]);
 for (let key in WeekModel) {
@@ -367,5 +385,11 @@ const today = ref(moment().milliseconds());
       justify-content: space-around;
     }
   }
+}
+.work-detail {
+  position: fixed;
+  cursor: pointer;
+  right: 0;
+  top: 50px;
 }
 </style>
