@@ -8,6 +8,7 @@
             :currentDate="currentDate"
             :workContent="workContent"
           />
+          <DetailList />
           <n-tag
             type="success"
             size="small"
@@ -107,6 +108,7 @@
 <script setup lang="ts">
 import { onMounted, ref, Ref, toRaw, watch } from "vue";
 import Type from "./components/type"; //选择类型
+import DetailList from "./components/detailList";
 import { Account } from "@/app/api/account";
 
 import {
