@@ -37,7 +37,7 @@ export const createWindow = (option: CreateWindowOption): BrowserWindow => {
     window.loadURL(option.url)
     if (option.dev) {
         //打开开发工具
-        // window.webContents.openDevTools({ mode: "detach" });
+        window.webContents.openDevTools({ mode: "detach" });
     }
     if (option.show) {
         window.show()

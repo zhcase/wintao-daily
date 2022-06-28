@@ -2,82 +2,140 @@
  * @Author: zeHua
  * @Date: 2022-06-27 18:25:50
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-27 20:56:29
- * @FilePath: /wintao/wintao-daily/src/app/components/Content/components/CycleSetting/components/detailList/index.vue
+ * @LastEditTime: 2022-06-28 18:14:14
+ * @FilePath: \sticky-notes\src\app\components\Content\components\CycleSetting\components\detailList\index.vue
 -->
 <template>
   <div class="daily">
     <el-collapse v-model="activeNames" @change="handleChange">
-      <el-collapse-item title=" IDMP智慧数字管理平台(3.5h)" name="1">
+      <el-collapse-item
+        :title="
+          item.wordType == 1
+            ? item.projectName + '(正常工作)'
+            : item.projectName + '(加班)'
+        "
+        :name="item.id"
+        v-for="(item, index) of detailList"
+      >
         <el-descriptions direction="vertical" :column="4" size="small" border>
-          <el-descriptions-item label="姓名">陈泽华</el-descriptions-item>
-          <el-descriptions-item label="功能名称">功能开发</el-descriptions-item>
-          <el-descriptions-item label="时长(h)">7.5</el-descriptions-item>
-          <el-descriptions-item label="申报日期"
-            >2022-06-01</el-descriptions-item
-          >
+          <el-descriptions-item label="姓名">{{
+            item.staffName
+          }}</el-descriptions-item>
+          <el-descriptions-item label="工作类型">{{
+            item.wordType == 1 ? "正常工作" : "加班"
+          }}</el-descriptions-item>
+
+          <el-descriptions-item label="功能名称">{{
+            item.itemName
+          }}</el-descriptions-item>
+          <el-descriptions-item label="时长(h)">{{
+            item.wordType == 1 ? item.workHour : item.workHourOverTime
+          }}</el-descriptions-item>
+          <el-descriptions-item label="申报日期">{{
+            item.writeDate
+          }}</el-descriptions-item>
           <el-descriptions-item label="备注" :span="4">
-            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+            {{ item.describe }}
           </el-descriptions-item>
           <el-descriptions-item label="操作">
-            <el-button type="primary" :icon="Edit" circle />
-            <el-button type="danger" :icon="Delete" circle />
+            <!-- <el-button type="primary" :icon="Edit" circle /> -->
+            <el-popconfirm
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+              :icon="InfoFilled"
+              @confirm="handleConfirmDelete(item)"
+              icon-color="#626AEF"
+              title="你确定要删除此日报吗?"
+            >
+              <template #reference>
+                <el-button
+                  type="danger"
+                  :icon="Delete"
+                  circle
+                  @click="handleDeleteDaily(item)"
+                />
+              </template>
+            </el-popconfirm>
           </el-descriptions-item>
         </el-descriptions>
       </el-collapse-item>
-      <el-collapse-item title="Feedback" name="2">
-        <div>
-          Operation feedback: enable the users to clearly perceive their
-          operations by style updates and interactive effects;
-        </div>
-        <div>
-          Visual feedback: reflect current state by updating or rearranging
-          elements of the page.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Efficiency" name="3">
-        <div>
-          Simplify the process: keep operating process simple and intuitive;
-        </div>
-        <div>
-          Definite and clear: enunciate your intentions clearly so that the
-          users can quickly understand and make decisions;
-        </div>
-        <div>
-          Easy to identify: the interface should be straightforward, which helps
-          the users to identify and frees them from memorizing and recalling.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Controllability" name="4">
-        <div>
-          Decision making: giving advices about operations is acceptable, but do
-          not make decisions for the users;
-        </div>
-        <div>
-          Controlled consequences: users should be granted the freedom to
-          operate, including canceling, aborting or terminating current
-          operation.
-        </div>
-      </el-collapse-item>
     </el-collapse>
+    <el-button type="danger" style="width: 100%" @click="handleBack"
+      >返回</el-button
+    >
   </div>
 </template>
-<script lang="ts" setup>
-import { ref } from 'vue'
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
-const activeNames = ref(['1'])
-const size = ref('samll')
+<script>
+import { ref, defineComponent, onMounted } from "vue";
+import { Account } from "@/app/api/account.ts";
+import { Delete, Edit } from "@element-plus/icons-vue";
 
-const handleChange = (val: string[]) => {
-  console.log(val)
-}
+export default defineComponent({
+  props: {
+    currentDate: {
+      type: String,
+      default: "",
+    },
+  },
+  setup(props, context) {
+    const activeNames = ref(["1"]);
+    const size = ref("samll");
+    const detailList = ref([]);
+    console.log(props);
+
+    const getDateInfoList = async () => {
+      let data = {
+        url: "http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList",
+        cookie: localStorage.getItem("sessionId"),
+        method: "POST",
+        data: {
+          startDate: props.currentDate,
+          endDate: props.currentDate,
+          page: "1",
+          rows: "10",
+        },
+      };
+      let result = await Account.Proxy(data);
+      detailList.value = result.data.rows;
+    };
+
+    const handleDeleteDaily = async () => {};
+
+    const handleChange = (val) => {
+      console.log(val);
+    };
+    // 删除
+    const handleConfirmDelete = async (val) => {
+      let data = {
+        url: "http://192.168.0.12:8080/WDMS/DailyController/deleteDaily",
+        cookie: localStorage.getItem("sessionId"),
+        method: "POST",
+        data: {
+          id: "15170",
+        },
+      };
+      let result = await Account.Proxy(data);
+      console.log(result);
+      detailList.value = result.data.rows;
+      console.log(val);
+    };
+    const handleBack = () => {
+      context.emit("cancel");
+    };
+    onMounted(() => {
+      getDateInfoList();
+    });
+    return {
+      handleChange,
+      Delete,
+      Edit,
+      detailList,
+      handleDeleteDaily,
+      handleConfirmDelete,
+      handleBack,
+    };
+  },
+});
 </script>
 
 <style lang="less" scoped>
@@ -88,7 +146,9 @@ const handleChange = (val: string[]) => {
   z-index: 9999;
   width: 100%;
   height: calc(100% - 40px);
-  border: 1px solid red;
   background-color: #fff;
+}
+.el-collapse-item__header {
+  padding: 0 5px;
 }
 </style>

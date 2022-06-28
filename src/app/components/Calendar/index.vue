@@ -2,7 +2,7 @@
  * @Author: zeHua
  * @Date: 2022-06-23 21:34:37
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-27 15:43:32
+ * @LastEditTime: 2022-06-28 18:22:53
  * @FilePath: \sticky-notes\src\app\components\Calendar\index.vue
 -->
 <template>
@@ -13,10 +13,11 @@
       style="mrgin-top: 100px"
     >
       <div class="wintao-p-calender-content">
-        <el-calendar :range="dateRange" :disabledDate="disabledDateFun">
-          <template #header="{ date }">
+        <!-- :range="dateRange" :disabledDate="disabledDateFun" -->
+        <el-calendar :disabledDate="disabledDateFun">
+          <!-- <template #header="{ date }">
             {{ currentYyMm }}
-          </template>
+          </template> -->
           <template #dateCell="{ data }">
             <p
               style="position: relative; text-align: center"

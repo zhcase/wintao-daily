@@ -8,10 +8,15 @@
             :currentDate="currentDate"
             :workContent="workContent"
           />
-          <DetailList />
+          <DetailList
+            @cancel="isShowDetail = false"
+            v-if="isShowDetail"
+            :currentDate="currentDate"
+          />
           <n-tag
             type="success"
             size="small"
+            v-if="workerTotal > 0"
             class="work-detail"
             @click="handleDetail"
             round
@@ -153,13 +158,14 @@ const props = withDefaults(defineProps<Props>(), {
 // 表单设置
 const formRef: Ref<FormInst> = ref(null);
 const isShowLoading = ref(false);
+const isShowDetail = ref(false);
 const typeRef = ref(null);
 console.log(props);
 
 const currentDate = ref(props.currentDate);
 const message = useMessage();
 const workContent = ref(props.workContent);
-
+const workerTotal = ref(0);
 const formRules: FormRules = {
   way: {
     required: true,
@@ -196,6 +202,24 @@ const emits = defineEmits<{
   (e: "update:show", v: boolean): void;
 }>();
 
+const getDateInfoList = async () => {
+  let data = {
+    url: "http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList",
+    cookie: localStorage.getItem("sessionId"),
+    method: "POST",
+    data: {
+      startDate: props.currentDate,
+      endDate: props.currentDate,
+      page: "1",
+      rows: "10",
+    },
+  };
+  let result = await Account.Proxy(data);
+  console.log(result);
+  workerTotal.value = result.data.total;
+  // detailList.value = result.data.rows;
+};
+
 // 循环方式
 const selectWayOptions: Ref<SelectOption[]> = ref([]);
 for (let key in RemindWayModel) {
@@ -208,7 +232,9 @@ for (let key in RemindWayModel) {
 }
 
 // 查看明细
-const handleDetail = (val) => {};
+const handleDetail = (val) => {
+  isShowDetail.value = true;
+};
 // 周
 const weekOptions: Ref<SelectOption[]> = ref([]);
 for (let key in WeekModel) {
@@ -340,6 +366,10 @@ const cancelClick = () => {
 
 // 日历
 const today = ref(moment().milliseconds());
+
+onMounted(() => {
+  getDateInfoList();
+});
 </script>
 
 <style lang="less">
