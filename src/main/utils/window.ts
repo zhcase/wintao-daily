@@ -37,7 +37,7 @@ export const createWindow = (option: CreateWindowOption): BrowserWindow => {
     window.loadURL(option.url)
     if (option.dev) {
         //打开开发工具
-        window.webContents.openDevTools({ mode: "detach" });
+        // window.webContents.openDevTools({ mode: "detach" });
     }
     if (option.show) {
         window.show()
@@ -88,13 +88,10 @@ export const createTipWindow = (option: CreateWindowOption, widthSize: number = 
         let m = myDate.getMinutes(); // 获取分钟数
 
             
-        if (h == 18 && m == 55) {
-                win.showInactive()
-            
+        if ((h == 17 && m == 50) || (h == 17 && m == 55)) {
+            win.showInactive()
             }else{
                     win.hide()
-                
-          
             }
     },1500);
     // 设置窗口鼠标穿透

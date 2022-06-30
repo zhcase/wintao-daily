@@ -2,7 +2,7 @@
  * @Author: zeHua
  * @Date: 2022-06-27 18:25:50
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-28 18:14:14
+ * @LastEditTime: 2022-06-29 10:39:35
  * @FilePath: \sticky-notes\src\app\components\Content\components\CycleSetting\components\detailList\index.vue
 -->
 <template>
@@ -31,7 +31,10 @@
           <el-descriptions-item label="时长(h)">{{
             item.wordType == 1 ? item.workHour : item.workHourOverTime
           }}</el-descriptions-item>
-          <el-descriptions-item label="申报日期">{{
+          <el-descriptions-item label="日报日期" :span="2">{{
+            currentDate
+          }}</el-descriptions-item>
+          <el-descriptions-item label="申报日期" :span="2">{{
             item.writeDate
           }}</el-descriptions-item>
           <el-descriptions-item label="备注" :span="4">
@@ -69,6 +72,7 @@
 import { ref, defineComponent, onMounted } from "vue";
 import { Account } from "@/app/api/account.ts";
 import { Delete, Edit } from "@element-plus/icons-vue";
+import { NButton, useMessage } from "naive-ui";
 
 export default defineComponent({
   props: {
@@ -81,8 +85,10 @@ export default defineComponent({
     const activeNames = ref(["1"]);
     const size = ref("samll");
     const detailList = ref([]);
-    console.log(props);
+    let user = localStorage.getItem("user");
+    const message = useMessage();
 
+    user = JSON.parse(user);
     const getDateInfoList = async () => {
       let data = {
         url: "http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList",
@@ -91,6 +97,7 @@ export default defineComponent({
         data: {
           startDate: props.currentDate,
           endDate: props.currentDate,
+          userAccount: user && user.useraccount,
           page: "1",
           rows: "10",
         },
@@ -106,18 +113,19 @@ export default defineComponent({
     };
     // 删除
     const handleConfirmDelete = async (val) => {
+      console.log(val);
       let data = {
         url: "http://192.168.0.12:8080/WDMS/DailyController/deleteDaily",
         cookie: localStorage.getItem("sessionId"),
         method: "POST",
         data: {
-          id: "15170",
+          id: val.id,
         },
       };
       let result = await Account.Proxy(data);
-      console.log(result);
-      detailList.value = result.data.rows;
-      console.log(val);
+      message.success("删除成功");
+      getDateInfoList();
+      context.emit("cancel");
     };
     const handleBack = () => {
       context.emit("cancel");
@@ -129,6 +137,7 @@ export default defineComponent({
       handleChange,
       Delete,
       Edit,
+      currentDate: props.currentDate,
       detailList,
       handleDeleteDaily,
       handleConfirmDelete,
@@ -139,6 +148,9 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.el-collapse {
+  padding: 0 5px !important;
+}
 .daily {
   position: fixed;
   top: 40px;

@@ -6,10 +6,11 @@
           <Type
             ref="typeRef"
             :currentDate="currentDate"
+            v-if="!isShowDetail"
             :workContent="workContent"
           />
           <DetailList
-            @cancel="isShowDetail = false"
+            @cancel="detailBack"
             v-if="isShowDetail"
             :currentDate="currentDate"
           />
@@ -220,6 +221,13 @@ const getDateInfoList = async () => {
   // detailList.value = result.data.rows;
 };
 
+const detailBack = () => {
+  isShowDetail.value = false;
+  getDateInfoList();
+
+  emits("ok", toRaw(model.value));
+};
+
 // 循环方式
 const selectWayOptions: Ref<SelectOption[]> = ref([]);
 for (let key in RemindWayModel) {
@@ -321,7 +329,8 @@ const sureClick = (val) => {
         itemId: typeRef.value.model.funName,
         proId: typeRef.value.model.projectName,
         reportDate: String(typeRef.value.model.declareDate),
-        workHour: totalHours,
+        workHour: typeRef.value.model.workType == 1 ? totalHours : 0,
+        workHourOverTime: typeRef.value.model.workType == 1 ? 0 : totalHours,
         describe: typeRef.value.model.workContent,
         size: typeRef.value.model.planListForm.length,
         hours: houresArray,

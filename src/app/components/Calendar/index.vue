@@ -2,7 +2,7 @@
  * @Author: zeHua
  * @Date: 2022-06-23 21:34:37
  * @LastEditors: zeHua
- * @LastEditTime: 2022-06-28 18:22:53
+ * @LastEditTime: 2022-06-30 19:26:24
  * @FilePath: \sticky-notes\src\app\components\Calendar\index.vue
 -->
 <template>
@@ -14,7 +14,7 @@
     >
       <div class="wintao-p-calender-content">
         <!-- :range="dateRange" :disabledDate="disabledDateFun" -->
-        <el-calendar :disabledDate="disabledDateFun">
+        <el-calendar :disabledDate="disabledDateFun" v-model="currentMonth">
           <!-- <template #header="{ date }">
             {{ currentYyMm }}
           </template> -->
@@ -48,11 +48,12 @@
 
 <script lang="ts" setup>
 import { Account } from "@/app/api/account";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { NSpin } from "naive-ui";
-const dateArray = [];
+let dateArray = [];
 const workContent = ref("");
 const dateRange = ref([]); //日期范围
+const currentMonth = ref(new Date());
 const currentYyMm = ref(""); //当前年月
 const isShowCalendar = ref(false);
 let currentDate = new Date();
@@ -63,11 +64,26 @@ let m = currentDate.getMonth() + 1; //月
 let d = currentDate.getDate(); // 日
 dateRange.value[0] = y + "," + (m - 1) + "," + d;
 dateRange.value[1] = y + "," + m + "," + d;
-console.log(dateRange);
 currentYyMm.value = y + "年" + m + "月";
-console.log(currentYyMm);
+let year = `${y}-${m < 10 ? "0" + m : m}-${d}`;
+const formatDateTime = (date) => {
+  var y = date.getFullYear();
+  var m = date.getMonth() + 1;
+  m = m < 10 ? "0" + m : m;
+  var d = date.getDate();
+  d = d < 10 ? "0" + d : d;
+  var h = date.getHours();
+  var minute = date.getMinutes();
+  minute = minute < 10 ? "0" + minute : minute;
+  // return y + '-' + m + '-' + d+' '+h+':'+minute;
+  return [y + "-" + m + "-" + d, y, m];
+};
 
-const getDaily = async () => {
+const getDaily = async (startYear, endYear) => {
+  dateArray = [];
+  console.log(startYear);
+  console.log(endYear);
+
   isShowCalendar.value = false;
   // http://192.168.0.12:8080/WDMS/DailyController/loadDailyDataList
   let data = {
@@ -75,12 +91,12 @@ const getDaily = async () => {
     cookie: localStorage.getItem("sessionId"),
     method: "POST",
     data: {
-      startDate: `${y}-${m - 1}-${d}`,
-      endDate: `${y}-${m}-${d}`,
+      startDate: startYear,
+      endDate: endYear,
       // staffName: user.useraccount,
       userAccount: user && user.useraccount,
       page: 1,
-      rows: 100,
+      rows: 200,
     },
   };
   let result: any = await Account.Proxy(data);
@@ -115,10 +131,9 @@ const getDaily = async () => {
       dateArray.push(item);
     }
   }
-  console.log(dateArray);
   isShowCalendar.value = true;
 };
-getDaily();
+getDaily(`${y}-${m}-${1}`, `${y}-${m}-${31}`);
 
 const computeHasDate = (data) => {
   return dateArray.indexOf(data.day) > -1;
@@ -126,11 +141,35 @@ const computeHasDate = (data) => {
 const emitDate = defineEmits(["updateDate"]);
 
 const handleClickDate = (data) => {
+  console.log(year);
+
+  console.log(data.day > year);
+  if (data.day > year) {
+    return;
+  }
   emitDate("updateDate", data);
 };
 const disabledDateFun = (time) => {
   return time.getTime() < new Date().getTime();
 };
+
+watch(
+  () => currentMonth.value,
+  (newV, oldV) => {
+    if (formatDateTime(newV)[0] > year) {
+      return;
+    }
+    console.log(
+      formatDateTime(newV)[0],
+      `${formatDateTime(newV)[1]}-${formatDateTime(newV)[2]}-${31}`
+    );
+
+    getDaily(
+      `${formatDateTime(newV)[1]}-${Number(formatDateTime(newV)[2]) - 1}-${25}`,
+      `${formatDateTime(newV)[1]}-${Number(formatDateTime(newV)[2]) + 1}-${10}`
+    );
+  }
+);
 defineExpose({
   getDaily,
   workContent,

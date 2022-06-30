@@ -3,6 +3,7 @@
     <n-form ref="formRef" :model="model" :rules="rules" size="small">
       <n-form-item path="workType" label="工作类型">
         <n-select
+          @change="changeWorkType"
           v-model:value="model.workType"
           placeholder="Select"
           :options="generalOptions"
@@ -43,7 +44,7 @@
           v-model:value="model.planListForm[index].hours"
           size="small"
           :min="0"
-          :max="7.5"
+          :max="model.workType == 1 ? 7.5 : 24"
         />
       </n-form-item>
       <n-form-item label="工作内容" path="workContent">
@@ -245,17 +246,47 @@ export default defineComponent({
       let datas = res.data;
       if (datas.code === 100000) {
         planList.value = datas.rtn.list;
+        let t = 0; //计算是否超过7.5
         console.log(planList.value);
         planList.value.map((item, index) => {
-          modelRef.value.planListForm[index] = {
-            content: item.name,
-            hours: 0.0,
-            id: item.id,
-          };
+          if (Number(item.overtime) >= 7.5 && t == 0) {
+            modelRef.value.planListForm[index] = {
+              content: item.name,
+              hours: 7.5,
+              id: item.id,
+            };
+          } else {
+            t = Number(t);
+            if (t < 7.5) {
+              let sh =
+                Number(item.overtime) >= (7.5 - Number(t.toFixed(1))).toFixed(1)
+                  ? (7.5 - Number(t.toFixed(1))).toFixed(1)
+                  : Number(item.overtime).toFixed(1);
+              modelRef.value.planListForm[index] = {
+                content: item.name,
+                hours: sh,
+                id: item.id,
+              };
+            } else {
+              modelRef.value.planListForm[index] = {
+                content: item.name,
+                hours: 0.0,
+                id: item.id,
+              };
+            }
+          }
+          t += item.overtime.toFixed(1);
         });
       }
     }
-
+    // 改变工作类型
+    const changeWorkType = (type) => {
+      if (type === 2) {
+        modelRef.value.planListForm.map((item) => {
+          item.hours = 0;
+        });
+      }
+    };
     onMounted(() => {
       getProjectName();
     });
@@ -264,6 +295,7 @@ export default defineComponent({
       formRef,
       rPasswordFormItemRef,
       model: modelRef,
+      changeWorkType,
       rules,
       funList,
       getProjectName,
